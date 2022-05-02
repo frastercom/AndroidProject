@@ -1,6 +1,5 @@
 package com.example.termostattoendversion.ui.view.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -27,11 +26,10 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.ItemViewHo
         this.component.add(component);
     }
 
-    @SuppressLint("ResourceType")
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ItemViewHolder(inflater.inflate(R.id.toggle_widget, viewGroup));
+        return new ItemViewHolder(inflater.inflate(R.layout.toggle_widget, viewGroup, false));
     }
 
     @Override
