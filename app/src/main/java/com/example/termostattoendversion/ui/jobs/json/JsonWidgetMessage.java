@@ -1,5 +1,8 @@
 package com.example.termostattoendversion.ui.jobs.json;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class JsonWidgetMessage {
 
     private String widget;
@@ -11,12 +14,65 @@ public class JsonWidgetMessage {
     private String topic;
     private String after;
     private String options;
-    private int status;
+    private String status;
     private String color;
     private String type;
     private String size;
     private String dateFormat;
     private String maxCount;
+
+    public JsonWidgetMessage(String message) {
+        try {
+            JSONObject o = new JSONObject(message);
+            if (!o.isNull("widget")) {
+                widget = o.getString("widget");
+            }
+            if (!o.isNull("icon")) {
+                icon = o.getString("icon");
+            }
+            if (!o.isNull("iconOff")) {
+                iconOff = o.getString("iconOff");
+            }
+            if (!o.isNull("page")) {
+                page = o.getString("page");
+            }
+            if (!o.isNull("order")) {
+                order = o.getString("order");
+            }
+            if (!o.isNull("descr")) {
+                descr = o.getString("descr");
+            }
+            if (o.isNull("topic")) {
+                topic = o.getString("topic");
+            }
+            if (o.isNull("after")) {
+                after = o.getString("after");
+            }
+            if (o.isNull("options")) {
+                options = o.getString("options");
+            }
+            if (o.isNull("status")) {
+                status = o.getString("status");
+            }
+            if (o.isNull("color")) {
+                color = o.getString("color");
+            }
+            if (o.isNull("type")) {
+                type = o.getString("type");
+            }
+            if (o.isNull("size")) {
+                size = o.getString("size");
+            }
+            if (o.isNull("dateFormat")) {
+                dateFormat = o.getString("dateFormat");
+            }
+            if (o.isNull("maxCount")) {
+                maxCount = o.getString("maxCount");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     public String getWidget() {
         return widget;
@@ -90,11 +146,11 @@ public class JsonWidgetMessage {
         this.options = options;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
