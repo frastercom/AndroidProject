@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.example.termostattoendversion.R;
 import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
+import com.example.termostattoendversion.ui.view.selected_widgets.SelectedWidget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.ItemViewHo
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ItemViewHolder(inflater.inflate(R.layout.toggle_widget, viewGroup, false));
+        return new ItemViewHolder(SelectedWidget.getWidget(component.get(i), inflater, viewGroup));
     }
 
     @Override
