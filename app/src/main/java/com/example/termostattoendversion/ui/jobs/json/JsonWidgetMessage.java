@@ -42,31 +42,31 @@ public class JsonWidgetMessage {
             if (!o.isNull("descr")) {
                 descr = o.getString("descr");
             }
-            if (o.isNull("topic")) {
+            if (!o.isNull("topic")) {
                 topic = o.getString("topic");
             }
-            if (o.isNull("after")) {
+            if (!o.isNull("after")) {
                 after = o.getString("after");
             }
-            if (o.isNull("options")) {
+            if (!o.isNull("options")) {
                 options = o.getString("options");
             }
-            if (o.isNull("status")) {
+            if (!o.isNull("status")) {
                 status = o.getString("status");
             }
-            if (o.isNull("color")) {
+            if (!o.isNull("color")) {
                 color = o.getString("color");
             }
-            if (o.isNull("type")) {
+            if (!o.isNull("type")) {
                 type = o.getString("type");
             }
-            if (o.isNull("size")) {
+            if (!o.isNull("size")) {
                 size = o.getString("size");
             }
-            if (o.isNull("dateFormat")) {
+            if (!o.isNull("dateFormat")) {
                 dateFormat = o.getString("dateFormat");
             }
-            if (o.isNull("maxCount")) {
+            if (!o.isNull("maxCount")) {
                 maxCount = o.getString("maxCount");
             }
         } catch (JSONException e) {

@@ -33,7 +33,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         recyclerView = binding.recyclerView;
-        recyclerView.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(binding.recyclerView.getContext()));
         WidgetAdapter widgetAdapter = new WidgetAdapter(binding.getRoot().getContext());
         recyclerView.setAdapter(widgetAdapter);
         MqttConnection.connectMqtt(getActivity(), recyclerView);

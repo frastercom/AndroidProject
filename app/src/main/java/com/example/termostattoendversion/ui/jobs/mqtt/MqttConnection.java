@@ -39,8 +39,8 @@ public class MqttConnection {
 
     public static void connectMqtt(FragmentActivity activity, RecyclerView view) {
         String serverUri = "tcp://130.61.92.192:1883";  // Здесь вы можете ввести доменное имя + номер порта 1883 для различных облачных платформ IoT. Примечание: префикс «tcp: //» обязателен. Я не писал его раньше, поэтому долго не могу подключиться к нему.
-        String userName = "test:test";                    // Тогда ваше имя пользователя, Alibaba Cloud, Tencent Cloud, Baidu Yuntian Gongwu подключается к этим платформам, оно будет автоматически сгенерировано после создания нового устройства
-        String passWord = "test";                    // Пароль, соответствующий имени пользователя, те же самые различные облачные платформы будут генерировать пароль соответственно, здесь моя платформа EMQ не ограничена, поэтому имя пользователя и пароль могут быть введены случайно
+        String userName = "tim:tim";                    // Тогда ваше имя пользователя, Alibaba Cloud, Tencent Cloud, Baidu Yuntian Gongwu подключается к этим платформам, оно будет автоматически сгенерировано после создания нового устройства
+        String passWord = "tim";                    // Пароль, соответствующий имени пользователя, те же самые различные облачные платформы будут генерировать пароль соответственно, здесь моя платформа EMQ не ограничена, поэтому имя пользователя и пароль могут быть введены случайно
         String clientId = "app" + System.currentTimeMillis(); // clientId очень важен и не может быть повторен, иначе он не будет подключен, поэтому я определил его как приложение + текущее время
         String channelName = "/IoTmanager/*/config";
         String topicHello = "/IoTmanager";
@@ -71,7 +71,7 @@ public class MqttConnection {
                             MqttMessage m = new MqttMessage();
                             m.setPayload("HELLO".getBytes());
                             mqtt_client.publish(topicHello, m);
-                            Log.i("mqtt:", "hello>> "+topicHello);
+                            Log.i("mqtt:", "hello>> сообщение отправлено");
 //                    pJSONMessage.setMQTTclient(mqtt_client);
                             mqttSetClient(view);
                         }
@@ -82,6 +82,11 @@ public class MqttConnection {
 
 
                 } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    addListener(view);
+                } catch (MqttException e) {
                     e.printStackTrace();
                 }
             }
@@ -151,11 +156,6 @@ public class MqttConnection {
 
                 }
             });
-            mqtt_client.subscribe(CHANEL_NAME, 0);
-            MqttMessage m = new MqttMessage();
-            m.setPayload("HELLO".getBytes());
-            mqtt_client.publish(TOPIC_HELLO, m);
-            Log.d("HELLO", "send message");
         }
     }
 
@@ -185,9 +185,6 @@ public class MqttConnection {
                 String m = byteArrayToHexString(message.getPayload());
                 Log.e("message", m);
                 ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
-
-
-
             }
 
 
