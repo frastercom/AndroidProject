@@ -33,19 +33,10 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         recyclerView = binding.recyclerView;
-        recyclerView.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(binding.recyclerView.getContext()));
         WidgetAdapter widgetAdapter = new WidgetAdapter(binding.getRoot().getContext());
         recyclerView.setAdapter(widgetAdapter);
-//        final TextView textView = binding.textHome;
-//        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        MqttConnection.setMqtt(binding.getRoot().getContext(), "tim:tim","tim");
-        Log.d("Errors", "online "+String.valueOf(MqttConnection.mqttOnline()));
-        try {
-            MqttConnection.addListener(recyclerView);
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-        MqttConnection.outputHelloMessage();
+        MqttConnection.connectMqtt(getActivity(), recyclerView);
         return root;
     }
 
