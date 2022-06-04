@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.termostattoendversion.ui.jobs.json.JsonStatusMessage;
 import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
 import com.example.termostattoendversion.ui.jobs.message.MessageClass;
 import com.example.termostattoendversion.ui.view.adapters.WidgetAdapter;
@@ -106,6 +107,14 @@ public class MqttConnection {
         }
     }
 
+    public static void topic(String topic) {
+        try {
+            mqtt_client.subscribe(topic.concat("/status"), 1);
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      *  Отправка сообщения
      *
@@ -147,8 +156,14 @@ public class MqttConnection {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String m = byteArrayToHexString(message.getPayload());
-                    Log.e("message", m);
-                    ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                    Log.e("MESSAGE", "message: " + m + " topic: " + topic);
+                    if (m != null && !m.equals("")) {
+                        if (!m.contains("status")) {
+                            ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                        } else {
+                            ((WidgetAdapter) view.getAdapter()).addStatus(topic, new JsonStatusMessage(m));
+                        }
+                    }
                 }
 
                 @Override
@@ -183,8 +198,13 @@ public class MqttConnection {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 String m = byteArrayToHexString(message.getPayload());
-                Log.e("message", m);
-                ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                if (!m.contains("status")) {
+                    Log.e("WIDGET","message: "+ m);
+                    ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                } else {
+                    Log.e("STATUS", "message: "+m);
+                    ((WidgetAdapter) view.getAdapter()).addStatus(topic, new JsonStatusMessage(m));
+                }
             }
 
 

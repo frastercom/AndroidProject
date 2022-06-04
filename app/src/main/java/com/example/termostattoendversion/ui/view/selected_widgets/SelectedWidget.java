@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.example.termostattoendversion.ui.jobs.json.JsonStatusMessage;
 import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
+import com.example.termostattoendversion.ui.jobs.mqtt.MqttConnection;
 import com.example.termostattoendversion.ui.view.widgets.AnydataWidget;
 import com.example.termostattoendversion.ui.view.widgets.ChartWidget;
 import com.example.termostattoendversion.ui.view.widgets.InputWidget;
@@ -18,22 +19,23 @@ public class SelectedWidget {
 
     public static View getWidget(JsonWidgetMessage message, JsonStatusMessage status, LayoutInflater inflater, ViewGroup viewGroup) {
         Log.e("MESSAGE WIDGET", message.getWidget());
+        MqttConnection.topic(message.getTopic());
         switch (ListWidgets.valueOf(message.getWidget())) {
             case select:
                 Log.i("ADD", "widget: SELECT");
-                return SelectWidget.getWidget(inflater, status, viewGroup);
+                return SelectWidget.getWidget(inflater, message, status, viewGroup);
             case input:
                 Log.i("ADD", "widget: INPUT");
-                return InputWidget.getWidget(inflater, status, viewGroup);
+                return InputWidget.getWidget(inflater, message, status, viewGroup);
             case toggle:
                 Log.i("ADD", "widget: TOGGLE");
-                return ToggleWidget.getWidget(inflater, status, viewGroup);
+                return ToggleWidget.getWidget(inflater, message, status, viewGroup);
             case chart:
                 Log.i("ADD", "widget: CHART");
-                return ChartWidget.getWidget(inflater, status, viewGroup);
+                return ChartWidget.getWidget(inflater, message, status, viewGroup);
             case anydata:
                 Log.i("ADD", "widget: ANYDATA");
-                return AnydataWidget.getWidget(inflater, status, viewGroup);
+                return AnydataWidget.getWidget(inflater, message, status, viewGroup);
         }
         return null;
     }

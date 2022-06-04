@@ -32,7 +32,7 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.ItemViewHo
 
     public void addStatus(String topic, JsonStatusMessage status) {
         statusMap.put(topic, status);
-        notifyDataSetChanged();
+        //notifyDataSetChanged();
     }
 
     public void addWidget(JsonWidgetMessage component) {
@@ -53,7 +53,15 @@ public class WidgetAdapter extends RecyclerView.Adapter<WidgetAdapter.ItemViewHo
     public void onBindViewHolder(@NonNull ItemViewHolder itemViewHolder, int i) {
         Log.d("BIND VIEW", "BIND i:" + i);
 //        itemViewHolder.view.
-        itemViewHolder.view.addView(SelectedWidget.getWidget(component.get(i), statusMap.get(component.get(i).getTopic()),inflater, itemViewHolder.viewGroup));
+        if (component.get(i).getTopic() != null) {
+            itemViewHolder.view.addView(SelectedWidget.getWidget(component.get(i),
+                    statusMap.get(component.get(i).getTopic().concat("/status")), inflater, itemViewHolder.viewGroup));
+
+        } else {
+            itemViewHolder.view.addView(SelectedWidget.getWidget(component.get(i),
+                    statusMap.get(""), inflater, itemViewHolder.viewGroup));
+
+        }
     }
 
     @Override
