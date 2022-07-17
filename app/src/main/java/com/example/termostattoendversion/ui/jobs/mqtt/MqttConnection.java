@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.example.termostattoendversion.ui.jobs.json.JsonStatusMessage;
 import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
 import com.example.termostattoendversion.ui.jobs.message.MessageClass;
+import com.example.termostattoendversion.ui.jobs.statics.StaticsStatus;
 import com.example.termostattoendversion.ui.view.adapters.WidgetAdapter;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -23,7 +24,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MqttConnection {
 
@@ -33,12 +37,15 @@ public class MqttConnection {
     private final static String TOPIC_HELLO = "/IoTmanager";
     private static MqttAndroidClient mqtt_client;
     private static MqttConnectOptions options;               // Пароль, соответствующий имени пользователя, те же самые различные облачные платформы будут генерировать пароль соответственно, здесь моя платформа EMQ не ограничена, поэтому имя пользователя и пароль могут быть введены случайно
+    public static boolean isStatus;
+    public static Date date;
 
     public MqttConnection() {
 
     }
 
     public static void connectMqtt(FragmentActivity activity, RecyclerView view) {
+        isStatus = true;
         String serverUri = "tcp://130.61.92.192:1883";  // Здесь вы можете ввести доменное имя + номер порта 1883 для различных облачных платформ IoT. Примечание: префикс «tcp: //» обязателен. Я не писал его раньше, поэтому долго не могу подключиться к нему.
         String userName = "tim:tim";                    // Тогда ваше имя пользователя, Alibaba Cloud, Tencent Cloud, Baidu Yuntian Gongwu подключается к этим платформам, оно будет автоматически сгенерировано после создания нового устройства
         String passWord = "tim";                    // Пароль, соответствующий имени пользователя, те же самые различные облачные платформы будут генерировать пароль соответственно, здесь моя платформа EMQ не ограничена, поэтому имя пользователя и пароль могут быть введены случайно
@@ -116,14 +123,28 @@ public class MqttConnection {
     }
 
     /**
-     *  Отправка сообщения
+     * Отправка сообщения
      *
-     * @param topic     топик
-     * @param message   текст сообщения
+     * @param topic   топик
+     * @param message текст сообщения
      */
     public static void outputMessage(String topic, String message) {
         try {
+            Log.d("Message output", "Topic: " + topic + " messge: " + message);
+            MqttMessage m = new MqttMessage();
+            m.setPayload(message.getBytes(StandardCharsets.UTF_8));
+            mqtt_client.publish(topic, m);
+        } catch (Exception ex) {
+            Log.d("Errors", "Сообщение topic не отправлено");
+        }
+    }
 
+    public static void outputMessage(String topic, int message) {
+        try {
+            Log.d("Message output", "Topic: " + topic + " messge: " + message);
+            MqttMessage m = new MqttMessage();
+            m.setPayload(("{\"status\":" + message + "}").getBytes(StandardCharsets.UTF_8));
+            mqtt_client.publish(topic, m);
         } catch (Exception ex) {
             Log.d("Errors", "Сообщение topic не отправлено");
         }
@@ -133,7 +154,8 @@ public class MqttConnection {
         try {
             MqttMessage m = new MqttMessage();
             m.setPayload("HELLO".getBytes());
-            mqtt_client.publish("/IoTmanager",m);
+            mqtt_client.publish("/IoTmanager", m);
+            Log.d("MESSAGE OUTPUT", "Сообщение topic HELLO отправлено");
         } catch (Exception ex) {
             Log.d("Errors", "Сообщение topic не отправлено");
         }
@@ -156,14 +178,22 @@ public class MqttConnection {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String m = byteArrayToHexString(message.getPayload());
+                    if (isStatus && date != null && (Calendar.getInstance().getTime().getTime() - date.getTime()) > 1500) {
+                        isStatus = false;
+                        outputHelloMessage();
+                        Log.w("info", "isStatus: " + isStatus);
+                    }
                     Log.e("MESSAGE", "message: " + m + " topic: " + topic);
                     if (m != null && !m.equals("")) {
-                        if (!m.contains("status")) {
+                        if (!m.contains("{\"status\"")  && isStatus) {
                             ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                            date = Calendar.getInstance().getTime();
                         } else {
-                            ((WidgetAdapter) view.getAdapter()).addStatus(topic, new JsonStatusMessage(m));
+                            StaticsStatus.setStatus(topic, new JsonStatusMessage(m));
                         }
                     }
+
+
                 }
 
                 @Override
@@ -172,10 +202,10 @@ public class MqttConnection {
                 }
             });
         }
+
     }
 
-    public static void mqttSetClient(RecyclerView view)
-    {
+    public static void mqttSetClient(RecyclerView view) {
         mqtt_client.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
@@ -198,12 +228,18 @@ public class MqttConnection {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 String m = byteArrayToHexString(message.getPayload());
-                if (!m.contains("status")) {
-                    Log.e("WIDGET","message: "+ m);
+                Log.w("info", "isStatus: " + isStatus);
+                if ((Calendar.getInstance().getTime().getTime() - date.getTime()) > 1500) {
+                    isStatus = false;
+                    outputHelloMessage();
+                }
+                if (!m.contains("status") && isStatus) {
+                    Log.e("WIDGET", "message: " + m);
                     ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                    date = Calendar.getInstance().getTime();
                 } else {
-                    Log.e("STATUS", "message: "+m);
-                    ((WidgetAdapter) view.getAdapter()).addStatus(topic, new JsonStatusMessage(m));
+                    Log.e("STATUS", "message: " + m);
+                    StaticsStatus.setStatus(topic, new JsonStatusMessage(m));
                 }
             }
 

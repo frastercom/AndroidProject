@@ -5,24 +5,24 @@ import org.json.JSONObject;
 
 public class JsonStatusMessage {
 
-    private Object status;
+    private String status;
 
     public JsonStatusMessage(String message) {
         try {
             JSONObject o = new JSONObject(message);
             if (!o.isNull("status")) {
-                status = o.get("status");
+                status = o.getString("status");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public Object getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Object status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

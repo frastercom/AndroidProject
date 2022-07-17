@@ -1,5 +1,6 @@
 package com.example.termostattoendversion.ui.jobs.json;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,8 +14,8 @@ public class JsonWidgetMessage {
     private String descr;
     private String topic;
     private String after;
-    private String options;
-    private String status;
+    private String[] options;
+    private Object status;
     private String color;
     private String type;
     private String size;
@@ -49,7 +50,10 @@ public class JsonWidgetMessage {
                 after = o.getString("after");
             }
             if (!o.isNull("options")) {
-                options = o.getString("options");
+                JSONArray a = o.getJSONArray("options");
+                options = new String[a.length()];
+                for (int i = 0; i<a.length(); i++)
+                    options[i] = a.getString(i);
             }
             if (!o.isNull("status")) {
                 status = o.getString("status");
@@ -138,19 +142,19 @@ public class JsonWidgetMessage {
         this.after = after;
     }
 
-    public String getOptions() {
+    public String[] getOptions() {
         return options;
     }
 
-    public void setOptions(String options) {
+    public void setOptions(String[] options) {
         this.options = options;
     }
 
-    public String getStatus() {
+    public Object getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Object status) {
         this.status = status;
     }
 

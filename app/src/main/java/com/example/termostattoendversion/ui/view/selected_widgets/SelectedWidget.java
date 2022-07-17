@@ -1,5 +1,6 @@
 package com.example.termostattoendversion.ui.view.selected_widgets;
 
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,27 +17,23 @@ import com.example.termostattoendversion.ui.view.widgets.ToggleWidget;
 
 public class SelectedWidget {
 
-
-    public static View getWidget(JsonWidgetMessage message, JsonStatusMessage status, LayoutInflater inflater, ViewGroup viewGroup) {
-        Log.e("MESSAGE WIDGET", message.getWidget());
-        MqttConnection.topic(message.getTopic());
+    public void viewWidget(RecyclerView.ViewHolder viewHolder, JsonWidgetMessage message) {
         switch (ListWidgets.valueOf(message.getWidget())) {
             case select:
-                Log.i("ADD", "widget: SELECT");
-                return SelectWidget.getWidget(inflater, message, status, viewGroup);
+                new SelectWidget().getWidget(viewHolder, message);
+                break;
             case input:
-                Log.i("ADD", "widget: INPUT");
-                return InputWidget.getWidget(inflater, message, status, viewGroup);
+                new InputWidget().getWidget(viewHolder, message);
+                break;
             case toggle:
-                Log.i("ADD", "widget: TOGGLE");
-                return ToggleWidget.getWidget(inflater, message, status, viewGroup);
+                new ToggleWidget().getWidget(viewHolder, message);
+                break;
             case chart:
-                Log.i("ADD", "widget: CHART");
-                return ChartWidget.getWidget(inflater, message, status, viewGroup);
+                new ChartWidget().getWidget(viewHolder, message);
+                break;
             case anydata:
-                Log.i("ADD", "widget: ANYDATA");
-                return AnydataWidget.getWidget(inflater, message, status, viewGroup);
+                new AnydataWidget().getWidget(viewHolder, message);
+                break;
         }
-        return null;
     }
 }
