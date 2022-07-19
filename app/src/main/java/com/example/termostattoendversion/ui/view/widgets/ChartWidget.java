@@ -85,6 +85,7 @@ public class ChartWidget implements ISetStatus {
 
     @Override
     public void getWidget(RecyclerView.ViewHolder viewHolder, JsonWidgetMessage message) {
+        StaticsStatus.add(message.getTopic(), this);
         graph = viewHolder.itemView.findViewById(R.id.widget_chart);
         viewHolder.itemView.findViewById(R.id.id_widget_anydata).setVisibility(View.GONE);
         viewHolder.itemView.findViewById(R.id.id_widget_select).setVisibility(View.GONE);
