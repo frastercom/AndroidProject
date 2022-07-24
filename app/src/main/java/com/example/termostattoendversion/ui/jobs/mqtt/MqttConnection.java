@@ -35,6 +35,9 @@ public class MqttConnection {
     private final static String CLIENT_ID = "app".concat(Long.toString(System.currentTimeMillis()));
     private final static String CHANEL_NAME = "/IoTmanager/*/config";
     private final static String TOPIC_HELLO = "/IoTmanager";
+
+    private static WidgetAdapter widgetAdapter;
+
     private static MqttAndroidClient mqtt_client;
     private static MqttConnectOptions options;               // Пароль, соответствующий имени пользователя, те же самые различные облачные платформы будут генерировать пароль соответственно, здесь моя платформа EMQ не ограничена, поэтому имя пользователя и пароль могут быть введены случайно
     public static boolean isStatus;
@@ -42,6 +45,14 @@ public class MqttConnection {
 
     public MqttConnection() {
 
+    }
+
+    public static WidgetAdapter getWidgetAdapter() {
+        return widgetAdapter;
+    }
+
+    public static void setWidgetAdapter(WidgetAdapter widgetAdapter) {
+        MqttConnection.widgetAdapter = widgetAdapter;
     }
 
     public static void connectMqtt(FragmentActivity activity, RecyclerView view) {

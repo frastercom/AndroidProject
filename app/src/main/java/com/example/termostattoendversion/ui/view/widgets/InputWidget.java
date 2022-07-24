@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -54,11 +55,11 @@ public class InputWidget implements ISetStatus {
 
 
         if (message.getColor().equals("orange")) {
-            textStatus.setBackgroundColor(Color.rgb(255, 165, 0));
+            textStatus.getBackground().setColorFilter(Color.rgb(200, 125, 0), PorterDuff.Mode.MULTIPLY);
         } else if (message.getColor().equals("green")) {
-            textStatus.setBackgroundColor(Color.GREEN);
+            textStatus.getBackground().setColorFilter(Color.rgb(0, 150, 100), PorterDuff.Mode.MULTIPLY);
         } else if (message.getColor().equals("red")) {
-            textStatus.setBackgroundColor(Color.RED);
+            textStatus.getBackground().setColorFilter(Color.rgb(255, 50, 50), PorterDuff.Mode.MULTIPLY);
         }
 
 
