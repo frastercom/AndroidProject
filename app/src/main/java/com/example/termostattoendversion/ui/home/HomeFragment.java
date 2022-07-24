@@ -34,9 +34,14 @@ public class HomeFragment extends Fragment {
 
         recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(binding.recyclerView.getContext()));
-        WidgetAdapter widgetAdapter = new WidgetAdapter();
-        recyclerView.setAdapter(widgetAdapter);
-        MqttConnection.connectMqtt(getActivity(), recyclerView);
+        if (MqttConnection.getWidgetAdapter() == null) {
+            WidgetAdapter widgetAdapter = new WidgetAdapter();
+            recyclerView.setAdapter(widgetAdapter);
+            MqttConnection.setWidgetAdapter(widgetAdapter);
+            MqttConnection.connectMqtt(getActivity(), recyclerView);
+        } else {
+            recyclerView.setAdapter(MqttConnection.getWidgetAdapter());
+        }
         return root;
     }
 

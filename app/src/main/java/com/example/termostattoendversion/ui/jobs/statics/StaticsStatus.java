@@ -30,7 +30,6 @@ public class StaticsStatus {
         Log.d("STATUS", "Status ------->>> " + status.getStatus());
         if (statusMap.get(key) != null) {
             statusMap.get(key).setStatus(status);
-            return;
         }
         widgetAdapter.getComponent().stream().filter(o -> key.contains(o.getTopic())).forEach(o -> o.setStatus(status));
     }
