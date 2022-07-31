@@ -28,9 +28,10 @@ public class StaticsStatus {
 
     public static void setStatus(String key, JsonStatusMessage status) {
         Log.d("STATUS", "Status ------->>> " + status.getStatus());
+//        Log.w("STATUS", "Status ------->>> key>>>>>>>>>>>>>" + key);
         if (statusMap.get(key) != null) {
             statusMap.get(key).setStatus(status);
         }
-        widgetAdapter.getComponent().stream().filter(o -> key.contains(o.getTopic())).forEach(o -> o.setStatus(status));
+        widgetAdapter.getComponent().stream().filter(o -> key.contains(o.getTopic().concat("/status"))).forEach(o -> o.setStatus(status));
     }
 }

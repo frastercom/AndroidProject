@@ -1,5 +1,7 @@
 package com.example.termostattoendversion.ui.jobs.json;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -155,6 +157,7 @@ public class JsonWidgetMessage {
     }
 
     public void setStatus(Object status) {
+//        Log.w("STATUS", "Status ------->>> topic>>>>>>>>>>>>>" + topic);
         this.status = status;
     }
 
