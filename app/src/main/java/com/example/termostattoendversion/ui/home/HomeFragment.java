@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.example.termostattoendversion.databinding.FragmentHomeBinding;
+import com.example.termostattoendversion.ui.jobs.device.Device;
 import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
 import com.example.termostattoendversion.ui.jobs.mqtt.MqttConnection;
 import com.example.termostattoendversion.ui.view.adapters.WidgetAdapter;
@@ -38,7 +39,7 @@ public class HomeFragment extends Fragment {
             WidgetAdapter widgetAdapter = new WidgetAdapter();
             recyclerView.setAdapter(widgetAdapter);
             MqttConnection.setWidgetAdapter(widgetAdapter);
-            MqttConnection.connectMqtt(getActivity(), recyclerView);
+            MqttConnection.connectMqtt(getActivity(), recyclerView, new Device("tim:tim", "tim"));
         } else {
             recyclerView.setAdapter(MqttConnection.getWidgetAdapter());
         }

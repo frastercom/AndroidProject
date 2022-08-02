@@ -7,15 +7,11 @@ public class JsonStatusMessage {
 
     private String status;
 
-    public JsonStatusMessage(String message) {
-        try {
-            JSONObject o = new JSONObject(message);
-            if (!o.isNull("status")) {
-                status = o.getString("status");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public JsonStatusMessage() {
+    }
+
+    public JsonStatusMessage(String status) {
+        this.status = status;
     }
 
     public String getStatus() {

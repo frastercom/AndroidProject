@@ -24,60 +24,7 @@ public class JsonWidgetMessage {
     private String dateFormat;
     private String maxCount;
 
-    public JsonWidgetMessage(String message) {
-        try {
-            JSONObject o = new JSONObject(message);
-            if (!o.isNull("widget")) {
-                widget = o.getString("widget");
-            }
-            if (!o.isNull("icon")) {
-                icon = o.getString("icon");
-            }
-            if (!o.isNull("iconOff")) {
-                iconOff = o.getString("iconOff");
-            }
-            if (!o.isNull("page")) {
-                page = o.getString("page");
-            }
-            if (!o.isNull("order")) {
-                order = o.getString("order");
-            }
-            if (!o.isNull("descr")) {
-                descr = o.getString("descr");
-            }
-            if (!o.isNull("topic")) {
-                topic = o.getString("topic");
-            }
-            if (!o.isNull("after")) {
-                after = o.getString("after");
-            }
-            if (!o.isNull("options")) {
-                JSONArray a = o.getJSONArray("options");
-                options = new String[a.length()];
-                for (int i = 0; i<a.length(); i++)
-                    options[i] = a.getString(i);
-            }
-            if (!o.isNull("status")) {
-                status = o.getString("status");
-            }
-            if (!o.isNull("color")) {
-                color = o.getString("color");
-            }
-            if (!o.isNull("type")) {
-                type = o.getString("type");
-            }
-            if (!o.isNull("size")) {
-                size = o.getString("size");
-            }
-            if (!o.isNull("dateFormat")) {
-                dateFormat = o.getString("dateFormat");
-            }
-            if (!o.isNull("maxCount")) {
-                maxCount = o.getString("maxCount");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public JsonWidgetMessage() {
     }
 
     public String getWidget() {

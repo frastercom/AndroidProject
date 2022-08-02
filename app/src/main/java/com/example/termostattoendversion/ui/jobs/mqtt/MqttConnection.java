@@ -6,11 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.termostattoendversion.ui.jobs.device.Device;
 import com.example.termostattoendversion.ui.jobs.json.JsonStatusMessage;
 import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
 import com.example.termostattoendversion.ui.jobs.message.MessageClass;
 import com.example.termostattoendversion.ui.jobs.statics.StaticsStatus;
 import com.example.termostattoendversion.ui.view.adapters.WidgetAdapter;
+import com.google.gson.Gson;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -44,7 +46,6 @@ public class MqttConnection {
     public static Date date;
 
     public MqttConnection() {
-
     }
 
     public static WidgetAdapter getWidgetAdapter() {
@@ -55,25 +56,18 @@ public class MqttConnection {
         MqttConnection.widgetAdapter = widgetAdapter;
     }
 
-    public static void connectMqtt(FragmentActivity activity, RecyclerView view) {
+    public static void connectMqtt(FragmentActivity activity, RecyclerView view, Device device) {
         isStatus = true;
-        String serverUri = "tcp://130.61.92.192:1883";  // Здесь вы можете ввести доменное имя + номер порта 1883 для различных облачных платформ IoT. Примечание: префикс «tcp: //» обязателен. Я не писал его раньше, поэтому долго не могу подключиться к нему.
-        String userName = "test:test";                    // Тогда ваше имя пользователя, Alibaba Cloud, Tencent Cloud, Baidu Yuntian Gongwu подключается к этим платформам, оно будет автоматически сгенерировано после создания нового устройства
-        String passWord = "test";                    // Пароль, соответствующий имени пользователя, те же самые различные облачные платформы будут генерировать пароль соответственно, здесь моя платформа EMQ не ограничена, поэтому имя пользователя и пароль могут быть введены случайно
-        String clientId = "app" + System.currentTimeMillis(); // clientId очень важен и не может быть повторен, иначе он не будет подключен, поэтому я определил его как приложение + текущее время
-        String channelName = "/IoTmanager/*/config";
-        String topicHello = "/IoTmanager";
-
         Runnable runnable = new Runnable() {
             public void run() {
                 Log.e("mqtt:", "connect ");
-                mqtt_client = new MqttAndroidClient(activity, serverUri, clientId);
+                mqtt_client = new MqttAndroidClient(activity, SERVER_URL, CLIENT_ID);
                 try {
                     // Создание и создание экземпляра объекта параметра соединения MQTT
                     options = new MqttConnectOptions();
                     // Затем устанавливаем соответствующие параметры
-                    options.setUserName(userName);                  // Устанавливаем имя пользователя подключения
-                    options.setPassword(passWord.toCharArray());    // Устанавливаем пароль для подключения
+                    options.setUserName(device.getUserName());                  // Устанавливаем имя пользователя подключения
+                    options.setPassword(device.getPassword().toCharArray());    // Устанавливаем пароль для подключения
                     options.setConnectionTimeout(30);               // Устанавливаем период ожидания в секундах
                     options.setKeepAliveInterval(60);               // Устанавливаем сердцебиение, 30 с
                     options.setAutomaticReconnect(true);            // Следует ли повторно подключаться
@@ -86,10 +80,10 @@ public class MqttConnection {
                         i++;
                         Thread.sleep(1000);
                         if (mqtt_client.isConnected()) {
-                            mqtt_client.subscribe(channelName, 0);
+                            mqtt_client.subscribe(CHANEL_NAME, 0);
                             MqttMessage m = new MqttMessage();
                             m.setPayload("HELLO".getBytes());
-                            mqtt_client.publish(topicHello, m);
+                            mqtt_client.publish(TOPIC_HELLO, m);
                             Log.i("mqtt:", "hello>> сообщение отправлено");
 //                    pJSONMessage.setMQTTclient(mqtt_client);
                             mqttSetClient(view);
@@ -197,14 +191,12 @@ public class MqttConnection {
                     Log.e("MESSAGE", "message: " + m + " topic: " + topic);
                     if (m != null && !m.equals("")) {
                         if (!m.contains("{\"status\"")  && isStatus) {
-                            ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                            ((WidgetAdapter) view.getAdapter()).addWidget(new Gson().fromJson(m, JsonWidgetMessage.class));
                             date = Calendar.getInstance().getTime();
                         } else {
-                            StaticsStatus.setStatus(topic, new JsonStatusMessage(m));
+                            StaticsStatus.setStatus(topic, new Gson().fromJson(m, JsonStatusMessage.class));
                         }
                     }
-
-
                 }
 
                 @Override
@@ -246,11 +238,11 @@ public class MqttConnection {
                 }
                 if (!m.contains("status") && isStatus) {
                     Log.e("WIDGET", "message: " + m);
-                    ((WidgetAdapter) view.getAdapter()).addWidget(new JsonWidgetMessage(m));
+                    ((WidgetAdapter) view.getAdapter()).addWidget(new Gson().fromJson(m, JsonWidgetMessage.class));
                     date = Calendar.getInstance().getTime();
                 } else {
                     Log.e("STATUS", "message: " + m);
-                    StaticsStatus.setStatus(topic, new JsonStatusMessage(m));
+                    StaticsStatus.setStatus(topic, new Gson().fromJson(m, JsonStatusMessage.class));
                 }
             }
 
