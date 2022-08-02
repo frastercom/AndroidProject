@@ -39,7 +39,7 @@ public class HomeFragment extends Fragment {
             WidgetAdapter widgetAdapter = new WidgetAdapter();
             recyclerView.setAdapter(widgetAdapter);
             MqttConnection.setWidgetAdapter(widgetAdapter);
-            MqttConnection.connectMqtt(getActivity(), recyclerView, new Device("tim:tim", "tim"));
+            MqttConnection.connectMqtt(getActivity(), recyclerView, new Device("test:test", "test"));
         } else {
             recyclerView.setAdapter(MqttConnection.getWidgetAdapter());
         }
