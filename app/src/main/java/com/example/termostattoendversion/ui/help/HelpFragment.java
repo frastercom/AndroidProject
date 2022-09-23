@@ -23,8 +23,6 @@ public class HelpFragment extends Fragment {
         binding = FragmentHelpBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textSlideshow;
-        slideshowViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

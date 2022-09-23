@@ -1,14 +1,15 @@
 package com.example.termostattoendversion.ui.device;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.arch.lifecycle.ViewModelProvider;
 
+import com.example.termostattoendversion.AddingDeviceActivity;
 import com.example.termostattoendversion.databinding.FragmentDeviceBinding;
 
 public class DeviceFragment extends Fragment {
@@ -23,8 +24,6 @@ public class DeviceFragment extends Fragment {
         binding = FragmentDeviceBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textGallery;
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

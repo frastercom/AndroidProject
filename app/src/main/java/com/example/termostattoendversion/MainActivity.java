@@ -1,6 +1,8 @@
 package com.example.termostattoendversion;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.support.design.widget.Snackbar;
@@ -55,5 +57,14 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    public void addDevice(View view) {
+        Intent intent = new Intent(this, AddingDeviceActivity.class);
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.d("ADDING DEVICE", "Not show view "+e.getMessage());
+        }
     }
 }
