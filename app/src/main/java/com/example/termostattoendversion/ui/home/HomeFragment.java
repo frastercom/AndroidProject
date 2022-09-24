@@ -48,10 +48,11 @@ public class HomeFragment extends Fragment {
     private void mqttConnection() {
         if (MqttConnection.getWidgetAdapter() == null) {
             try {
+                Device device = read();
                 WidgetAdapter widgetAdapter = new WidgetAdapter();
                 recyclerView.setAdapter(widgetAdapter);
                 MqttConnection.setWidgetAdapter(widgetAdapter);
-                MqttConnection.connectMqtt(getActivity(), recyclerView, read());
+                MqttConnection.connectMqtt(getActivity(), recyclerView, device);
                 Log.d("MQTT", "Создаем соединение");
             } catch (Exception e) {
                 //заглушка
