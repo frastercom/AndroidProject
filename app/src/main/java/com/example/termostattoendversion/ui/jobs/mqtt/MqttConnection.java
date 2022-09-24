@@ -1,33 +1,25 @@
 package com.example.termostattoendversion.ui.jobs.mqtt;
 
-import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.termostattoendversion.ui.jobs.device.Device;
 import com.example.termostattoendversion.ui.jobs.json.JsonStatusMessage;
 import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
-import com.example.termostattoendversion.ui.jobs.message.MessageClass;
 import com.example.termostattoendversion.ui.jobs.statics.StaticsStatus;
 import com.example.termostattoendversion.ui.view.adapters.WidgetAdapter;
 import com.google.gson.Gson;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -81,26 +73,21 @@ public class MqttConnection {
                         Thread.sleep(1000);
                         if (mqtt_client.isConnected()) {
                             mqtt_client.subscribe(CHANEL_NAME, 0);
-                            MqttMessage m = new MqttMessage();
-                            m.setPayload("HELLO".getBytes());
-                            mqtt_client.publish(TOPIC_HELLO, m);
-                            Log.i("mqtt:", "hello>> сообщение отправлено");
-//                    pJSONMessage.setMQTTclient(mqtt_client);
-                            mqttSetClient(view);
+                            outputHelloMessage();
+                            try {
+                                addListener(view);
+                            } catch (MqttException e) {
+                                Log.e("MQTT", "Слушатель не был добавлен. Ошибка: " + e.getMessage());
+                            }
                         }
                     }
                     if (!mqtt_client.isConnected()) {
-                        Log.e("mqtt:", " not connect ");
+                        Log.d("MQTT", "Соедиенеие не установлено");
                     }
 
 
                 } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                try {
-                    addListener(view);
-                } catch (MqttException e) {
-                    e.printStackTrace();
+                    Log.e("MQTT", "Соедиенеие не установлено. Ошибка: " + e.getMessage());
                 }
             }
         };
@@ -113,17 +100,19 @@ public class MqttConnection {
         try {
             if (mqtt_client != null && mqtt_client.isConnected()) {
                 mqtt_client.disconnect();
+                Log.d("MQTT", "Дисконнект удачно произведен");
             }
         } catch (Exception ex) {
-            Log.d("Errors", "Дисконнект MQTT завершился ошибкой");
+            Log.e("MQTT", "Дисконнект MQTT завершился ошибкой");
         }
     }
 
     public static void topic(String topic) {
         try {
             mqtt_client.subscribe(topic.concat("/status"), 1);
+            Log.d("MQTT", String.format("Подписка на топик (%s) удачно произведена", topic));
         } catch (MqttException e) {
-            e.printStackTrace();
+            Log.e("MQTT", String.format("Подписка на топик (%s) не удалась. Ошибка: %s", topic, e.getMessage()));
         }
     }
 
@@ -135,23 +124,12 @@ public class MqttConnection {
      */
     public static void outputMessage(String topic, String message) {
         try {
-            Log.d("Message output", "Topic: " + topic + " messge: " + message);
             MqttMessage m = new MqttMessage();
             m.setPayload(message.getBytes(StandardCharsets.UTF_8));
             mqtt_client.publish(topic, m);
+            Log.d("MQTT", String.format("Сообщение (%s) отправлено на топик (%s)", message, topic));
         } catch (Exception ex) {
-            Log.d("Errors", "Сообщение topic не отправлено");
-        }
-    }
-
-    public static void outputMessage(String topic, int message) {
-        try {
-            Log.d("Message output", "Topic: " + topic + " messge: " + message);
-            MqttMessage m = new MqttMessage();
-            m.setPayload(("{\"status\":" + message + "}").getBytes(StandardCharsets.UTF_8));
-            mqtt_client.publish(topic, m);
-        } catch (Exception ex) {
-            Log.d("Errors", "Сообщение topic не отправлено");
+            Log.e("MQTT", String.format("Сообщение (%s) на топик (%s) не отправлено. Ошибка: %s", message, topic, ex.getMessage()));
         }
     }
 
@@ -160,9 +138,9 @@ public class MqttConnection {
             MqttMessage m = new MqttMessage();
             m.setPayload("HELLO".getBytes());
             mqtt_client.publish("/IoTmanager", m);
-            Log.d("MESSAGE OUTPUT", "Сообщение topic HELLO отправлено");
+            Log.d("MQTT", "Сообщение 'HELLO' отправлено");
         } catch (Exception ex) {
-            Log.d("Errors", "Сообщение topic не отправлено");
+            Log.e("MQTT", "Сообщение HELLO не отправлено. Ошибка: " + ex.getMessage());
         }
     }
 
@@ -172,7 +150,6 @@ public class MqttConnection {
 
     public static void addListener(RecyclerView view) throws MqttException {
         if (mqtt_client.isConnected()) {
-            Log.d("Errors", String.valueOf(mqtt_client != null));
             mqtt_client.subscribe("/IoTmanager", 0);
             mqtt_client.setCallback(new MqttCallback() {
                 @Override
@@ -183,17 +160,20 @@ public class MqttConnection {
                 @Override
                 public void messageArrived(String topic, MqttMessage message) throws Exception {
                     String m = byteArrayToHexString(message.getPayload());
+                    Log.d("MQTT", String.format("Входящее сообщение (%s) на топик (%s)", m, topic));
+                    //если сообщение не приходит в течении 1,5 секунды, отправляем Hello и получаем статусы
                     if (isStatus && date != null && (Calendar.getInstance().getTime().getTime() - date.getTime()) > 1500) {
                         isStatus = false;
                         outputHelloMessage();
-                        Log.w("info", "isStatus: " + isStatus);
+                        Log.d("MQTT", "Отправили HELLO, получаем статусы");
                     }
-                    Log.e("MESSAGE", "message: " + m + " topic: " + topic);
                     if (m != null && !m.equals("")) {
-                        if (!m.contains("{\"status\"")  && isStatus) {
+                        if (!m.contains("{\"status\"") && isStatus) {
+                            //Добавляем виджет
                             ((WidgetAdapter) view.getAdapter()).addWidget(new Gson().fromJson(m, JsonWidgetMessage.class));
                             date = Calendar.getInstance().getTime();
                         } else {
+                            //обновляем статус
                             StaticsStatus.setStatus(topic, new Gson().fromJson(m, JsonStatusMessage.class));
                         }
                     }
@@ -206,52 +186,6 @@ public class MqttConnection {
             });
         }
 
-    }
-
-    public static void mqttSetClient(RecyclerView view) {
-        mqtt_client.setCallback(new MqttCallbackExtended() {
-            @Override
-            public void connectComplete(boolean reconnect, String serverURI) {
-
-                try {
-                    mqtt_client.subscribe(CHANEL_NAME, 0);
-                    MqttMessage m = new MqttMessage();
-                    m.setPayload("HELLO".getBytes());
-                    mqtt_client.publish(TOPIC_HELLO, m);
-                } catch (MqttException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void connectionLost(Throwable cause) {
-
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage message) throws Exception {
-                String m = byteArrayToHexString(message.getPayload());
-                Log.w("info", "isStatus: " + isStatus);
-                if ((Calendar.getInstance().getTime().getTime() - date.getTime()) > 1500) {
-                    isStatus = false;
-                    outputHelloMessage();
-                }
-                if (!m.contains("status") && isStatus) {
-                    Log.e("WIDGET", "message: " + m);
-                    ((WidgetAdapter) view.getAdapter()).addWidget(new Gson().fromJson(m, JsonWidgetMessage.class));
-                    date = Calendar.getInstance().getTime();
-                } else {
-                    Log.e("STATUS", "message: " + m);
-                    StaticsStatus.setStatus(topic, new Gson().fromJson(m, JsonStatusMessage.class));
-                }
-            }
-
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken token) {
-
-            }
-        });
     }
 
     //преоброзование байтов в сторку

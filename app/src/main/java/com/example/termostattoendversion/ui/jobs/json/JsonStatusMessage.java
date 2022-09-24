@@ -1,8 +1,5 @@
 package com.example.termostattoendversion.ui.jobs.json;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class JsonStatusMessage {
 
     private String status;

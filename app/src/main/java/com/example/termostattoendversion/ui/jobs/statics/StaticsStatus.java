@@ -18,17 +18,17 @@ public class StaticsStatus {
     }
 
     public static void add(String key, ISetStatus status) {
-        Log.d("STATUS", "Status key ------->>> " + key.concat("/status"));
+        Log.d("STATUS", String.format("Добавляем ссылку на компонент со статусом. Ключ: %s", key.concat("/status")));
         statusMap.put(key.concat("/status"), status);
     }
 
     public static void clear() {
+        Log.d("STATUS", "Чистка статусов");
         statusMap.clear();
     }
 
     public static void setStatus(String key, JsonStatusMessage status) {
-        Log.d("STATUS", "Status ------->>> " + status.getStatus());
-//        Log.w("STATUS", "Status ------->>> key>>>>>>>>>>>>>" + key);
+        Log.d("STATUS", String.format("Присвоение статуса (%s) по ключу (%s)", status.getStatus(), key));
         if (statusMap.get(key) != null) {
             statusMap.get(key).setStatus(status);
         }

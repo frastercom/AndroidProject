@@ -7,18 +7,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.example.termostattoendversion.databinding.FragmentHomeBinding;
 import com.example.termostattoendversion.ui.jobs.device.Device;
-import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
 import com.example.termostattoendversion.ui.jobs.mqtt.MqttConnection;
 import com.example.termostattoendversion.ui.view.adapters.WidgetAdapter;
+import com.google.gson.Gson;
 
-import org.eclipse.paho.client.mqttv3.MqttException;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class HomeFragment extends Fragment {
 
@@ -35,14 +35,7 @@ public class HomeFragment extends Fragment {
 
         recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(binding.recyclerView.getContext()));
-        if (MqttConnection.getWidgetAdapter() == null) {
-            WidgetAdapter widgetAdapter = new WidgetAdapter();
-            recyclerView.setAdapter(widgetAdapter);
-            MqttConnection.setWidgetAdapter(widgetAdapter);
-            MqttConnection.connectMqtt(getActivity(), recyclerView, new Device("test:test", "test"));
-        } else {
-            recyclerView.setAdapter(MqttConnection.getWidgetAdapter());
-        }
+        mqttConnection();
         return root;
     }
 
@@ -50,5 +43,40 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void mqttConnection() {
+        if (MqttConnection.getWidgetAdapter() == null) {
+            try {
+                Device device = read();
+                WidgetAdapter widgetAdapter = new WidgetAdapter();
+                recyclerView.setAdapter(widgetAdapter);
+                MqttConnection.setWidgetAdapter(widgetAdapter);
+                MqttConnection.connectMqtt(getActivity(), recyclerView, device);
+                Log.d("MQTT", "Создаем соединение");
+            } catch (Exception e) {
+                //заглушка
+            }
+        } else {
+            Log.d("MQTT", "Используем существующее соединение");
+            recyclerView.setAdapter(MqttConnection.getWidgetAdapter());
+        }
+    }
+
+    private Device read() throws Exception {
+        try {
+            FileInputStream fis = getActivity().openFileInput("alice.csv");
+            byte[] bytes = new byte[fis.available()];
+            fis.read(bytes);
+            String text = new String(bytes);
+            if (text == null || text.isEmpty()) {
+                throw new Exception("Данные устройства отсутствуют");
+            }
+            Log.d("DEVICE_LOAD", "Учетка устройсва загружена");
+            return new Gson().fromJson(text, Device.class);
+        } catch (IOException e) {
+            Log.e("DEVICE_LOAD", "Произошла внутренняя ошибка чтения данных из хэш");
+            throw new Exception("Данные отсутствуют или внутренняя ошибка");
+        }
     }
 }
