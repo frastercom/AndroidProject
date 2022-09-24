@@ -2,18 +2,15 @@ package com.example.termostattoendversion.ui.view.widgets;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.example.termostattoendversion.R;
 import com.example.termostattoendversion.ui.jobs.json.JsonStatusMessage;
@@ -21,8 +18,6 @@ import com.example.termostattoendversion.ui.jobs.json.JsonWidgetMessage;
 import com.example.termostattoendversion.ui.jobs.mqtt.MqttConnection;
 import com.example.termostattoendversion.ui.jobs.statics.ISetStatus;
 import com.example.termostattoendversion.ui.jobs.statics.StaticsStatus;
-
-import org.json.JSONException;
 
 import java.util.Calendar;
 
@@ -33,7 +28,6 @@ public class InputWidget implements ISetStatus {
 
     @Override
     public void setStatus(JsonStatusMessage status) {
-        Log.d("STATUS", "Status Input Widget>>> " + status.getStatus());
         textStatus.setText(status.getStatus());
     }
 
@@ -79,81 +73,61 @@ public class InputWidget implements ISetStatus {
 
     private void setTimeStatus(JsonWidgetMessage jsonWidgetMessage) {
         textStatus.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_alarm_outline_icon), null, null, null);
-//                    textStatus.setPointerIcon(PointerIcon.getSystemIcon(view.getContext(), R.drawable.ic_temperature_icon));
-//                    textStatus.setText("test");
 
-        textStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar dateAndTime = Calendar.getInstance();
-                TimePickerDialog.OnTimeSetListener t = new TimePickerDialog.OnTimeSetListener() {
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        dateAndTime.set(Calendar.MINUTE, minute);
+        textStatus.setOnClickListener(v -> {
+            Calendar dateAndTime = Calendar.getInstance();
+            TimePickerDialog.OnTimeSetListener t = (view, hourOfDay, minute) -> {
+                dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                dateAndTime.set(Calendar.MINUTE, minute);
 //                                    setInitialDateTime();
-                        if (dateAndTime.getTime().getHours() > 9)
-                            if (dateAndTime.getTime().getMinutes() > 9)
-                                textStatus.setText(dateAndTime.getTime().getHours() + ":" + dateAndTime.getTime().getMinutes());
-                            else
-                                textStatus.setText(dateAndTime.getTime().getHours() + ":0" + dateAndTime.getTime().getMinutes());
-                        else if (dateAndTime.getTime().getMinutes() > 9)
-                            textStatus.setText("0" + dateAndTime.getTime().getHours() + ":" + dateAndTime.getTime().getMinutes());
-                        else
-                            textStatus.setText("0" + dateAndTime.getTime().getHours() + ":0" + dateAndTime.getTime().getMinutes());
-                        MqttConnection.outputMessage(jsonWidgetMessage.getTopic().concat("/control"), textStatus.getText().toString());
-                    }
-                };
-                String s = textStatus.getText().toString();
-                if (s.length() == 5) {
-                    int hour = Integer.parseInt(s.substring(0, 2));
-                    int minets = Integer.parseInt(s.substring(3));
-                    new TimePickerDialog(view.getContext(), t, hour, minets, true).show();
-                } else {
-                    new TimePickerDialog(view.getContext(), t, 0, 0, true).show();
-                }
+                if (dateAndTime.getTime().getHours() > 9)
+                    if (dateAndTime.getTime().getMinutes() > 9)
+                        textStatus.setText(dateAndTime.getTime().getHours() + ":" + dateAndTime.getTime().getMinutes());
+                    else
+                        textStatus.setText(dateAndTime.getTime().getHours() + ":0" + dateAndTime.getTime().getMinutes());
+                else if (dateAndTime.getTime().getMinutes() > 9)
+                    textStatus.setText("0" + dateAndTime.getTime().getHours() + ":" + dateAndTime.getTime().getMinutes());
+                else
+                    textStatus.setText("0" + dateAndTime.getTime().getHours() + ":0" + dateAndTime.getTime().getMinutes());
+                MqttConnection.outputMessage(jsonWidgetMessage.getTopic().concat("/control"), textStatus.getText().toString());
+            };
+            String s = textStatus.getText().toString();
+            if (s.length() == 5) {
+                int hour = Integer.parseInt(s.substring(0, 2));
+                int minets = Integer.parseInt(s.substring(3));
+                new TimePickerDialog(view.getContext(), t, hour, minets, true).show();
+            } else {
+                new TimePickerDialog(view.getContext(), t, 0, 0, true).show();
             }
         });
     }
 
     private void setThermometerStatus(JsonWidgetMessage jsonWidgetMessage) {
         textStatus.setCompoundDrawablesWithIntrinsicBounds(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_temperature_icon), null, null, null);
-//                    textStatus.setPointerIcon(PointerIcon.getSystemIcon(view.getContext(), R.drawable.ic_temperature_icon));
-//                    textStatus.setText("test");
-        textStatus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        textStatus.setOnClickListener(v -> {
 
-                //Создаем AlertDialog
-                AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(view.getContext());
-//                Log.d("debug","test>> "+mDialogBuilder.getContext());
-                final EditText input = new EditText(view.getContext());
+            //Создаем AlertDialog
+            AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(view.getContext());
+            final EditText input = new EditText(view.getContext());
 // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                mDialogBuilder.setView(input);
-                //Настраиваем сообщение в диалоговом окне:
-                mDialogBuilder
-                        .setCancelable(false)
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        //Вводим текст и отображаем в строке ввода на основном экране:
-                                        textStatus.setText(input.getText());
-                                        MqttConnection.outputMessage(jsonWidgetMessage.getTopic().concat("/control"), textStatus.getText().toString());
-                                    }
-                                })
-                        .setNegativeButton("Отмена",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            mDialogBuilder.setView(input);
+            //Настраиваем сообщение в диалоговом окне:
+            mDialogBuilder
+                    .setCancelable(false)
+                    .setPositiveButton("OK",
+                            (dialog, id) -> {
+                                textStatus.setText(input.getText());
+                                MqttConnection.outputMessage(jsonWidgetMessage.getTopic().concat("/control"), textStatus.getText().toString());
+                            })
+                    .setNegativeButton("Отмена",
+                            (dialog, id) -> dialog.cancel());
 
-                //Создаем AlertDialog:
-                AlertDialog alertDialog = mDialogBuilder.create();
+            //Создаем AlertDialog:
+            AlertDialog alertDialog = mDialogBuilder.create();
 
-                //и отображаем его:
-                alertDialog.show();
-            }
+            //и отображаем его:
+            alertDialog.show();
         });
     }
 

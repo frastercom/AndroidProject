@@ -2,10 +2,7 @@ package com.example.termostattoendversion.ui.view.widgets;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.termostattoendversion.R;
 import com.example.termostattoendversion.ui.jobs.json.JsonStatusMessage;
@@ -29,7 +26,7 @@ public class ChartWidget implements ISetStatus {
     private GraphView graph;
     private LineGraphSeries<DataPoint> series;
     private int size;
-    private ArrayList<String> hm = new ArrayList<String>();
+    private ArrayList<String> hm = new ArrayList<>();
 
     @Override
     public void setStatus(JsonStatusMessage status) {
@@ -37,7 +34,6 @@ public class ChartWidget implements ISetStatus {
             JSONArray array = new JSONArray(status.getStatus());
             if ((array.length() > 1) || (series == null)) {
                 graph.getSeries().clear();
-                Log.d("debug", "test 1");
                 DataPoint[] dp = new DataPoint[array.length()];
                 for (int i = 0; i < array.length(); i++) {
                     Date date = new Date(array.getJSONObject(i).getLong("x"));
@@ -46,7 +42,7 @@ public class ChartWidget implements ISetStatus {
                     dp[i] = new DataPoint(i, array.getJSONObject(i).getInt("y1"));
                 }
                 size = dp.length;
-                series = new LineGraphSeries<DataPoint>(dp);
+                series = new LineGraphSeries<>(dp);
                 series.setColor(Color.GREEN);
                 graph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
                     @Override
@@ -70,7 +66,6 @@ public class ChartWidget implements ISetStatus {
                 graph.getViewport().setScrollable(true);
                 graph.addSeries(series);
             } else {
-                Log.d("debug", "test 2");
                 Date date = new Date(array.getJSONObject(0).getLong("x"));
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                 hm.add(sdf.format(date));

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.NavigationView;
 
 import androidx.navigation.NavController;
@@ -17,7 +16,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.termostattoendversion.databinding.ActivityMainBinding;
-import com.example.termostattoendversion.ui.jobs.mqtt.MqttConnection;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,8 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.appBarMain.toolbar);
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_device, R.id.nav_help).setDrawerLayout(drawer)
                 .build();

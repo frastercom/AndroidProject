@@ -1,12 +1,8 @@
 package com.example.termostattoendversion.ui.view.widgets;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.termostattoendversion.R;
@@ -26,7 +22,6 @@ public class SelectWidget implements ISetStatus {
 
     @Override
     public void setStatus(JsonStatusMessage status) {
-        Log.d("STATUS", "Status Select Widget>>> " + status.getStatus());
         index = Integer.parseInt(status.getStatus());
         this.status.setText(array[index]);
     }
@@ -35,18 +30,14 @@ public class SelectWidget implements ISetStatus {
     public void getWidget(RecyclerView.ViewHolder viewHolder, JsonWidgetMessage message) {
         TextView name = viewHolder.itemView.findViewById(R.id.widget_select_name);
         name.setText(message.getDescr());
-        Log.d("SELECT WIDGET", "Select Widget>>>------------- " + message.getDescr());
         status = viewHolder.itemView.findViewById(R.id.widget_select_status);
         array = message.getOptions();
-        status.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                index++;
-                if (index >= array.length)
-                    index = 0;
-                status.setText(array[index]);
-                MqttConnection.outputMessage(message.getTopic().concat("/control"), ((Integer) index).toString());
-            }
+        status.setOnClickListener(v -> {
+            index++;
+            if (index >= array.length)
+                index = 0;
+            status.setText(array[index]);
+            MqttConnection.outputMessage(message.getTopic().concat("/control"), ((Integer) index).toString());
         });
         StaticsStatus.add(message.getTopic(), this);
         viewHolder.itemView.findViewById(R.id.id_widget_anydata).setVisibility(View.GONE);

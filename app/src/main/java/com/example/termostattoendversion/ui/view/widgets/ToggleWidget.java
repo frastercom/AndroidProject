@@ -1,11 +1,7 @@
 package com.example.termostattoendversion.ui.view.widgets;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.example.termostattoendversion.R;
@@ -15,15 +11,12 @@ import com.example.termostattoendversion.ui.jobs.mqtt.MqttConnection;
 import com.example.termostattoendversion.ui.jobs.statics.ISetStatus;
 import com.example.termostattoendversion.ui.jobs.statics.StaticsStatus;
 
-import org.json.JSONException;
-
 public class ToggleWidget implements ISetStatus {
 
     private Switch switch_on_off;
 
     @Override
     public void setStatus(JsonStatusMessage status) {
-        Log.d("STATUS", "Status Toggle Widget>>> " + status.getStatus());
         if (status.getStatus().equals("1")) {
             switch_on_off.setChecked(true);
         } else {
@@ -36,16 +29,13 @@ public class ToggleWidget implements ISetStatus {
         switch_on_off = viewHolder.itemView.findViewById(R.id.switch_on_of);
         switch_on_off.setText(message.getDescr());
         switch_on_off.setVisibility(View.VISIBLE);
-        switch_on_off.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == false) {
-                    MqttConnection.outputMessage(message.getTopic().concat("/control"), "0");
-                }
-                else
-                {
-                    MqttConnection.outputMessage(message.getTopic().concat("/control"), "1");
-                }
+        switch_on_off.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked == false) {
+                MqttConnection.outputMessage(message.getTopic().concat("/control"), "0");
+            }
+            else
+            {
+                MqttConnection.outputMessage(message.getTopic().concat("/control"), "1");
             }
         });
 
