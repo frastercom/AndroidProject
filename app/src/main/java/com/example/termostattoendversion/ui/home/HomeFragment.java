@@ -36,11 +36,13 @@ public class HomeFragment extends Fragment {
         recyclerView = binding.recyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(binding.recyclerView.getContext()));
         if (MqttConnection.getWidgetAdapter() == null) {
+            Log.d("MQTT", "Создаем соединение");
             WidgetAdapter widgetAdapter = new WidgetAdapter();
             recyclerView.setAdapter(widgetAdapter);
             MqttConnection.setWidgetAdapter(widgetAdapter);
             MqttConnection.connectMqtt(getActivity(), recyclerView, new Device("tim:tim", "tim"));
         } else {
+            Log.d("MQTT", "Используем существующее соединение");
             recyclerView.setAdapter(MqttConnection.getWidgetAdapter());
         }
         return root;

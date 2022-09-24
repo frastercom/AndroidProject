@@ -81,26 +81,22 @@ public class MqttConnection {
                         Thread.sleep(1000);
                         if (mqtt_client.isConnected()) {
                             mqtt_client.subscribe(CHANEL_NAME, 0);
-                            MqttMessage m = new MqttMessage();
-                            m.setPayload("HELLO".getBytes());
-                            mqtt_client.publish(TOPIC_HELLO, m);
-                            Log.i("mqtt:", "hello>> сообщение отправлено");
-//                    pJSONMessage.setMQTTclient(mqtt_client);
+                            outputHelloMessage();
                             mqttSetClient(view);
                         }
                     }
                     if (!mqtt_client.isConnected()) {
-                        Log.e("mqtt:", " not connect ");
+                        Log.d("MQTT", "Соедиенеие не установлено");
                     }
 
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e("MQTT", "Соедиенеие не установлено. Ошибка: " + e.getMessage());
                 }
                 try {
                     addListener(view);
                 } catch (MqttException e) {
-                    e.printStackTrace();
+                    Log.e("MQTT", "Слушатель не был добавлен. Ошибка: " + e.getMessage());
                 }
             }
         };
@@ -115,7 +111,7 @@ public class MqttConnection {
                 mqtt_client.disconnect();
             }
         } catch (Exception ex) {
-            Log.d("Errors", "Дисконнект MQTT завершился ошибкой");
+            Log.e("MQTT", "Дисконнект MQTT завершился ошибкой");
         }
     }
 
@@ -123,7 +119,7 @@ public class MqttConnection {
         try {
             mqtt_client.subscribe(topic.concat("/status"), 1);
         } catch (MqttException e) {
-            e.printStackTrace();
+            Log.e("MQTT", "Подписка на топик не удалась. Ошибка: " + e.getMessage());
         }
     }
 
@@ -140,18 +136,7 @@ public class MqttConnection {
             m.setPayload(message.getBytes(StandardCharsets.UTF_8));
             mqtt_client.publish(topic, m);
         } catch (Exception ex) {
-            Log.d("Errors", "Сообщение topic не отправлено");
-        }
-    }
-
-    public static void outputMessage(String topic, int message) {
-        try {
-            Log.d("Message output", "Topic: " + topic + " messge: " + message);
-            MqttMessage m = new MqttMessage();
-            m.setPayload(("{\"status\":" + message + "}").getBytes(StandardCharsets.UTF_8));
-            mqtt_client.publish(topic, m);
-        } catch (Exception ex) {
-            Log.d("Errors", "Сообщение topic не отправлено");
+            Log.e("MQTT", String.format("Сообщение (%s) на топик (%s) не отправлено. Ошибка: %s", message, topic, ex.getMessage()));
         }
     }
 
@@ -160,9 +145,9 @@ public class MqttConnection {
             MqttMessage m = new MqttMessage();
             m.setPayload("HELLO".getBytes());
             mqtt_client.publish("/IoTmanager", m);
-            Log.d("MESSAGE OUTPUT", "Сообщение topic HELLO отправлено");
+            Log.d("MQTT", "Сообщение 'HELLO' отправлено");
         } catch (Exception ex) {
-            Log.d("Errors", "Сообщение topic не отправлено");
+            Log.e("MQTT", "Сообщение HELLO не отправлено. Ошибка: " + ex.getMessage());
         }
     }
 
@@ -190,7 +175,7 @@ public class MqttConnection {
                     }
                     Log.e("MESSAGE", "message: " + m + " topic: " + topic);
                     if (m != null && !m.equals("")) {
-                        if (!m.contains("{\"status\"")  && isStatus) {
+                        if (!m.contains("{\"status\"") && isStatus) {
                             ((WidgetAdapter) view.getAdapter()).addWidget(new Gson().fromJson(m, JsonWidgetMessage.class));
                             date = Calendar.getInstance().getTime();
                         } else {

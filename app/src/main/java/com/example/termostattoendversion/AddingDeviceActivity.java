@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.termostattoendversion.ui.jobs.device.Device;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +44,7 @@ public class AddingDeviceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.adding_device);
-        ActionBar actionBar =getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Добавить устройство");
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -71,70 +72,52 @@ public class AddingDeviceActivity extends AppCompatActivity {
     }
 
     public void checkNetwork(View view) {
-        if (itsOnline(this)) {
+        if (itsOnline()) {
             addingDevice.setVisibility(View.GONE);
             addingDeviceSettings.setVisibility(View.VISIBLE);
 
+        } else {
+            Toast.makeText(this, "Соединение отсутствует", Toast.LENGTH_LONG).show();
         }
-        else
-        {
-            Toast toast = Toast.makeText(this, "Соединение отсутствует", Toast.LENGTH_LONG);
-            toast.show();
-        }
-//        Runnable runnable = new Runnable() {
-//                    public void run() {
-//                        try {
-//                            getSerialNumber();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                };
-//                Thread thread = new Thread(runnable);
-//                thread.start();
-
-
     }
 
     public void connect(View view) {
-        if ((usidText.getText().toString().length()>1) && (passwordText.getText().toString().length()>7)
-                && (login.getText().toString().length()>=3) && (password.getText().toString().length()>=3)) {
+        if ((usidText.getText().toString().length() > 1) && (passwordText.getText().toString().length() > 7)
+                && (login.getText().toString().length() >= 3) && (password.getText().toString().length() >= 3)) {
+            //серийный номер устройства
             String serialNumber = "";
             if (setWiFiConnection(usidText.getText().toString(), passwordText.getText().toString())) {
                 String userName = login.getText().toString();                    // Тогда ваше имя пользователя, Alibaba Cloud, Tencent Cloud, Baidu Yuntian Gongwu подключается к этим платформам, оно будет автоматически сгенерировано после создания нового устройства
                 String password = this.password.getText().toString();
                 if (setMQTTClient(userName, password)) {
-                    Device device = new Device(userName, password);
+
+                    Device device = new Device(userName, password, serialNumber);
                     try {
                         FileOutputStream fos = openFileOutput("alice.csv", MODE_PRIVATE);
-                        fos.write(device.getUserName().getBytes());
+                        fos.write(new Gson().toJson(device).getBytes());
+                        Log.d("DEVICE_SAVE", "Учетка устройсва сохранена");
                     } catch (IOException e) {
-//                        e.printStackTrace();
-                        Toast toast = Toast.makeText(this, "Данные не установлены", Toast.LENGTH_LONG);
+                        Log.e("DEVICE_SAVE", "Произошла внутренняя ошибка записи данных в хэш");
+                        Toast.makeText(this, "Данные не установлены", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 resetWiFiConnection();
                 finish();
             } else {
-                Toast toast = Toast.makeText(this, "Данные не установлены", Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.TOP, 0,160);   // import android.view.Gravity;
-                toast.show();
+                Log.d("DEVICE_SAVE", "от устройста пришел не 200-ый статус");
+                Toast.makeText(this, "Данные не установлены, внутренняя ошибка", Toast.LENGTH_LONG).show();
             }
-        }
-        else
-        {
-            Toast toast = Toast.makeText(this, "Заполните все поля корректно", Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.TOP, 0,160);   // import android.view.Gravity;
-            toast.show();
+        } else {
+            Log.d("DEVICE_SAVE", "Пользователь указал некорректные данные");
+            Toast.makeText(this, "Заполните все поля корректно, логин и пароль должны быть не менее 3 символов и не более 7 символов", Toast.LENGTH_LONG).show();
         }
     }
 
-    private boolean setWiFiConnection(String usid, String password)
-    {
+    private boolean setWiFiConnection(String usid, String password) {
         try {
-            URL url = new URL("http://admin:admin@192.168.4.1/set?routerssid="+usid+"&routerpass="+password);
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            URL url = new URL("http://admin:admin@192.168.4.1/set?routerssid=" + usid + "&routerpass=" + password);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 // все ок
                 return true;
@@ -148,11 +131,10 @@ public class AddingDeviceActivity extends AppCompatActivity {
         }
     }
 
-    private boolean setMQTTClient(String usid, String password)
-    {
+    private boolean setMQTTClient(String usid, String password) {
         try {
-            URL url = new URL("http://admin:admin@192.168.4.1/set?mqttUser="+usid+"&mqttPass="+password);
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            URL url = new URL("http://admin:admin@192.168.4.1/set?mqttUser=" + usid + "&mqttPass=" + password);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 // все ок
                 return true;
@@ -166,46 +148,10 @@ public class AddingDeviceActivity extends AppCompatActivity {
         }
     }
 
-    private void addWiFiTermostat()
-    {
-        String url = "http://admin:admin@192.168.1.107/?set.mqtt:28";
-        try {
-            readJsonFromUrl(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public JSONObject readJsonFromUrl(String adr) throws IOException, JSONException {
-        URL url = new URL(adr);
-//            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-//            connection.getResponseCode();
-        Log.i("json:", " url >> "+url.toString());
-        InputStreamReader is = new InputStreamReader(url.openStream());
-        BufferedReader rd = new BufferedReader(is);
-        String jsonText = readAll(rd);
-        Log.i("json:", "json url >> "+jsonText);
-        JSONObject json = new JSONObject(jsonText);
-        is.close();
-        return json;
-    }
-
-    private String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
-    private boolean resetWiFiConnection()
-    {
+    private boolean resetWiFiConnection() {
         try {
             URL url = new URL("http://admin:admin@192.168.4.1/set?reset");
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 // все ок
                 return true;
@@ -219,57 +165,22 @@ public class AddingDeviceActivity extends AppCompatActivity {
         }
     }
 
-    private boolean itsOnline(Context context) {
+    private boolean itsOnline() {
         try {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                     .permitAll().build();
-
             StrictMode.setThreadPolicy(policy);
-
             int timeoutMs = 2000;
             Socket sock = new Socket();
             SocketAddress sockaddr = new InetSocketAddress("192.168.4.1", 80);
-//            SocketAddress sockaddr = new InetSocketAddress("192.168.1.107", 80);
-
             sock.connect(sockaddr, timeoutMs);
             sock.close();
-            Log.i("CONNECTION STATUS:", "connected");
-
+            Log.i("CONNECTION STATUS:", "подключено к устройству");
             return true;
         } catch (IOException e) {
-            Log.i("CONNECTION STATUS:", "disconnected");
+            Log.i("CONNECTION STATUS:", "отсутствует подключение к устройству");
             return false;
         }
-    }
-
-    private String getSerialNumber() throws IOException {
-//        String url = "http://admin:admin@192.168.1.107/?set.device";
-//        HttpClient httpclient = new DefaultHttpClient(); // Create HTTP Client
-//        HttpGet httpget = new HttpGet("http://admin:admin@192.168.1.107/?set.device"); // Set the action you want to do
-//        HttpResponse response = httpclient.execute(httpget); // Executeit
-//        HttpEntity entity = response.getEntity();
-//        InputStream is = entity.getContent(); // Create an InputStream with the response
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
-//        StringBuilder sb = new StringBuilder();
-//        String line = null;
-//        while ((line = reader.readLine()) != null) // Read line by line
-//        {
-//            sb.append(line + "\n");
-//            Log.i("http test:", "sb line >>" + sb.toString());
-//        }
-//
-//        String resString = sb.toString(); // Result is here
-//
-//        is.close(); // Close the stream
-//        String url = "http://ya.ru";
-//        try {
-//            readJsonFromUrl(url);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-        return "";
     }
 
 
