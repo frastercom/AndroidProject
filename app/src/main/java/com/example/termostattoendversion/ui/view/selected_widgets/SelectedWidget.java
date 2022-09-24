@@ -13,19 +13,19 @@ public class SelectedWidget {
 
     public void viewWidget(RecyclerView.ViewHolder viewHolder, JsonWidgetMessage message) {
         switch (ListWidgets.valueOf(message.getWidget())) {
-            case SELECT:
+            case select:
                 new SelectWidget().getWidget(viewHolder, message);
                 break;
-            case INPUT:
+            case input:
                 new InputWidget().getWidget(viewHolder, message);
                 break;
-            case TOGGLE:
+            case toggle:
                 new ToggleWidget().getWidget(viewHolder, message);
                 break;
-            case CHART:
+            case chart:
                 new ChartWidget().getWidget(viewHolder, message);
                 break;
-            case ANYDATA:
+            case anydata:
                 new AnydataWidget().getWidget(viewHolder, message);
                 break;
         }

@@ -28,7 +28,7 @@ public class StaticsStatus {
     }
 
     public static void setStatus(String key, JsonStatusMessage status) {
-        Log.d("STATUS", String.format("Присвоение статуса () по ключу ()", status.getStatus(), key));
+        Log.d("STATUS", String.format("Присвоение статуса (%s) по ключу (%s)", status.getStatus(), key));
         if (statusMap.get(key) != null) {
             statusMap.get(key).setStatus(status);
         }
