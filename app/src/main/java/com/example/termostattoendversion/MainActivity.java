@@ -60,7 +60,16 @@ public class MainActivity extends AppCompatActivity {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            Log.d("ADDING DEVICE", "Окно добавления устройсво не открыто, внутренняя ошибка");
+            Log.d("ADDING DEVICE", "Окно добавления устройсва не открыто, внутренняя ошибка");
+        }
+    }
+
+    public void addLastDevice(View view) {
+        Intent intent = new Intent(this, AddingDeviceLastActivity.class);
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.d("ADDING DEVICE", "Окно добавления уже добавлено устройсва не открыто, внутренняя ошибка");
         }
     }
 }
