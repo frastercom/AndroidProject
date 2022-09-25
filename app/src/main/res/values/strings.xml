@@ -2,7 +2,8 @@
     <string name="app_name">Термостат</string>
     <string name="nav_header_title">Термостат</string>
     <string name="nav_header_desc">Навигация</string>
-    <string name="add_device">Добавить устройство</string>
+    <string name="add_device">Добавить новое устройство</string>
+    <string name="add_device_last">Добавить устройство</string>
 
     <string name="menu_home">Главная страница</string>
     <string name="menu_device">Устройства</string>

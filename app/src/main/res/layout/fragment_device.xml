@@ -17,5 +17,16 @@
             android:layout_height="wrap_content"
             android:onClick="addDevice"
             android:text="@string/add_device" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="addLastDevice"
+            android:text="@string/add_device_last" />
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
