@@ -23,6 +23,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * класс отвечает за подключение по mqtt к устройству
+ */
 public class MqttConnection {
 
     private final static String SERVER_URL = "tcp://iotml.ml:1883";
@@ -137,7 +140,7 @@ public class MqttConnection {
         try {
             MqttMessage m = new MqttMessage();
             m.setPayload("HELLO".getBytes());
-            mqtt_client.publish("/IoTmanager", m);
+            mqtt_client.publish(TOPIC_HELLO, m);
             Log.d("MQTT", "Сообщение 'HELLO' отправлено");
         } catch (Exception ex) {
             Log.e("MQTT", "Сообщение HELLO не отправлено. Ошибка: " + ex.getMessage());

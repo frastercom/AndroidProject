@@ -2,6 +2,8 @@ package com.example.termostattoendversion.ui.jobs.json;
 
 public class JsonTableMessage {
 
+    //json для графика
+
     private Long x;
     private int y1;
 

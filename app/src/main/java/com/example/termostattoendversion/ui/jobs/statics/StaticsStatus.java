@@ -8,6 +8,9 @@ import com.example.termostattoendversion.ui.view.adapters.WidgetAdapter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * класс отвечает за хранение статусов в адаптере компонента recycleView
+ */
 public class StaticsStatus {
 
     private static Map<String, ISetStatus> statusMap = new HashMap<>();

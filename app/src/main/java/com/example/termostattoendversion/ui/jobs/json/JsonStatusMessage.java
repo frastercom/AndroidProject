@@ -2,6 +2,8 @@ package com.example.termostattoendversion.ui.jobs.json;
 
 public class JsonStatusMessage {
 
+    //json получения (отправки) статуса
+
     private String status;
 
     public JsonStatusMessage() {

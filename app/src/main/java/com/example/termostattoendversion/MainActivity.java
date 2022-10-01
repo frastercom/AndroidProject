@@ -17,11 +17,15 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.termostattoendversion.databinding.ActivityMainBinding;
 
+/**
+ * Главный класс, который являеться точкой входа
+ */
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
+    //стандартный метод определяющий работу меню и приложения
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    //Вызов активности (вью), которое отвечает за добавление нового устройства
     public void addDevice(View view) {
         Intent intent = new Intent(this, AddingDeviceActivity.class);
         try {
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Вызов активности (вью), которое отвечает за добавление уже активированного устройства
     public void addLastDevice(View view) {
         Intent intent = new Intent(this, AddingDeviceLastActivity.class);
         try {

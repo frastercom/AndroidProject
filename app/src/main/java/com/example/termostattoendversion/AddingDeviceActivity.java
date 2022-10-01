@@ -22,6 +22,9 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URL;
 
+/**
+ * Активность (вью), отвечающая за добавление нового устройства
+ */
 public class AddingDeviceActivity extends AppCompatActivity {
 
     private LinearLayout addingDevice;
@@ -32,6 +35,7 @@ public class AddingDeviceActivity extends AppCompatActivity {
     private EditText login;
     private EditText password;
 
+    //Стандартный метод, при создании активности
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +67,7 @@ public class AddingDeviceActivity extends AppCompatActivity {
         }
     }
 
+    //проверка на подключение к сети wi-fi устройства
     public void checkNetwork(View view) {
         if (itsOnline()) {
             addingDevice.setVisibility(View.GONE);
@@ -73,6 +78,7 @@ public class AddingDeviceActivity extends AppCompatActivity {
         }
     }
 
+    //заполнение всех данных на устройстве (логин, пароль, сеть и т.д.)
     public void connect(View view) {
         if ((usidText.getText().toString().length() > 1) && (passwordText.getText().toString().length() > 7)
                 && (login.getText().toString().length() >= 3) && (password.getText().toString().length() >= 3)) {

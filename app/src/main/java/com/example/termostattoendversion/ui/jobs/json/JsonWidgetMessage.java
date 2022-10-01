@@ -2,6 +2,8 @@ package com.example.termostattoendversion.ui.jobs.json;
 
 public class JsonWidgetMessage {
 
+    //основной json для всех параметров
+
     private String widget;
     private String icon;
     private String iconOff;
