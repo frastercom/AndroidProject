@@ -9,6 +9,7 @@ import com.example.termostattoendversion.ui.view.widgets.InputWidget;
 import com.example.termostattoendversion.ui.view.widgets.SelectWidget;
 import com.example.termostattoendversion.ui.view.widgets.ToggleWidget;
 
+//выборка нужного виджета(компонента)
 public class SelectedWidget {
 
     public void viewWidget(RecyclerView.ViewHolder viewHolder, JsonWidgetMessage message) {

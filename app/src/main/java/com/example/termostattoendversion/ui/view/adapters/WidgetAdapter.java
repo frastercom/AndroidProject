@@ -13,7 +13,7 @@ import com.example.termostattoendversion.ui.view.selected_widgets.SelectedWidget
 
 import java.util.ArrayList;
 import java.util.List;
-
+//Адаптер recycleView
 public class WidgetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<JsonWidgetMessage> component = new ArrayList<>();

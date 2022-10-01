@@ -20,6 +20,9 @@ import com.google.gson.Gson;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * активность для работы с виджетами (компонентами) с помощью recycleView
+ */
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;

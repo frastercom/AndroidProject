@@ -15,11 +15,15 @@ import com.google.gson.Gson;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * Активность (вью), отвечающая за добавление уже активированного устройства
+ */
 public class AddingDeviceLastActivity extends AppCompatActivity {
 
     private EditText login;
     private EditText password;
 
+    //Стандартный метод, при создании активности
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +47,7 @@ public class AddingDeviceLastActivity extends AppCompatActivity {
         }
     }
 
+    //Сохранения логина и параля в хэш
     public void saveLastDevice(View view) {
         if (isTrueDeviceData(login.getText().toString(), password.getText().toString())) {
             Toast.makeText(this, "Заполните все поля корректно, логин и пароль должны быть не менее 3 символов и не более 7 символов", Toast.LENGTH_LONG).show();
@@ -62,6 +67,7 @@ public class AddingDeviceLastActivity extends AppCompatActivity {
         finish();
     }
 
+    //проверка правильности ввода
     private boolean isTrueDeviceData(String name, String password) {
         if (name.length() > 3 && name.length()<=7 || password.length() > 3 && password.length()<=7 ) {
             return false;

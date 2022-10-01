@@ -2,6 +2,8 @@ package com.example.termostattoendversion.ui.jobs.json;
 
 public class JsonDeviceInfo {
 
+    //не используется, создавался для хранения данных об устройстве
+
     private String id;
     private String name;
     private String login;

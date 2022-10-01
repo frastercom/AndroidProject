@@ -2,6 +2,8 @@ package com.example.termostattoendversion.ui.jobs.device;
 
 public class Device {
 
+    //класс предназначен для хранения и обработки данных устройства
+
     private String userName;
     private String password;
     private String serial;
