@@ -1,7 +1,12 @@
 package com.example.termostattoendversion;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -77,5 +82,46 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d("ADDING DEVICE", "Окно добавления уже добавлено устройсва не открыто, внутренняя ошибка");
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        // если пользователь закрыл запрос на разрешение, не дав ответа, массив grantResults будет пустым
+        if (requestCode >= 100 && requestCode <= 110 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // разрешение было предоставлено
+            // выполните здесь необходимые операции для включения функциональности приложения, связанной с запрашиваемым разрешением
+        } else {
+            // разрешение не было предоставлено
+            // выполните здесь необходимые операции для выключения функциональности приложения, связанной с запрашиваемым разрешением
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Доступы");
+            builder.setMessage("Вы не установили доступ к функции, приложение будет закрыто");
+            builder.setCancelable(true);
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() { // Кнопка ОК
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss(); // Отпускает диалоговое окно
+                    MainActivity.this.finish();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            //finishAffinity();
+        }
+    }
+
+    public boolean checkPermission(String permission, int requestCode) {
+        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
+            //Отображение запроса на разрешение
+            try {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+            } catch (Exception e) {
+                Log.e("РАЗРЕШЕНИЕ: ", "Не удалось отобразить пользователю");
+            }
+            Log.d("РАЗРЕШЕНИЕ", "не предовставлено " + permission);
+            return true;
+        }
+        Log.d("РАЗРЕШЕНИЕ", "предоставлено " + permission);
+        return false;
     }
 }
